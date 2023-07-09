@@ -14,6 +14,10 @@ public:
     virtual bool open(const char* rul);
     //定义关闭的接口
     virtual XData close();
+    //定义读取接口
+    virtual XData read();
+
+
     //构造函数
     FFDemux();
 

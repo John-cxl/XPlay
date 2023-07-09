@@ -59,6 +59,24 @@ bool FFDemux::open(const char* url)
     return true;
 }
 
+
+XData FFDemux::read()
+{
+    XData d;
+    AVPacket* pPacket = av_packet_alloc(); //申请空间
+
+    int ret = av_read_frame(ic, pPacket);  //读取信息到包里面
+    if(ret != 0)
+    {
+        av_packet_free(&pPacket);
+        return XData();
+    }
+    XLOGI("size = %d, pts = %lld",pPacket->size, pPacket->pts );
+
+    return d;
+}
+
+
 //定义关闭的接口
 XData FFDemux::close()
 {

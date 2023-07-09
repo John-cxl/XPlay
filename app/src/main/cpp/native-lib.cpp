@@ -11,6 +11,11 @@ Java_com_example_xplay_MainActivity_stringFromJNI(
 
     FFDemux* pDemux = new FFDemux();
     pDemux->open("/sdcard/Enders.Game.2013.BD1080.X264.AAC.English.CHS-ENG.52movieba.mp4");
+    for(;;)
+    {
+        pDemux->read();
+    }
+
     delete(pDemux);
     return env->NewStringUTF(hello.c_str());
 }
