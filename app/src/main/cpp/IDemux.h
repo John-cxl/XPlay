@@ -7,8 +7,9 @@
 
 #include "XData.h"
 #include "XThread.h"
+#include "IObserver.h"
 
-class IDemux :public XThread {
+class IDemux :public IObserver {
 public:
     //定义打开的接口
     virtual bool open(const char* rul) = 0;

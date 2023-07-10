@@ -22,7 +22,6 @@ FFDemux::FFDemux() {
         //初始化网络
         avformat_network_init();
     }
-
 }
 
 
@@ -69,6 +68,7 @@ XData FFDemux::read()
     if(ret != 0)
     {
         av_packet_free(&pPacket);
+
         return XData();
     }
     //XLOGI("size = %d, pts = %lld",pPacket->size, pPacket->pts );

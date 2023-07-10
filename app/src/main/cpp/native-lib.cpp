@@ -4,13 +4,27 @@
 #include "FFDemux.h"
 #include "XLog.h"
 
+class TestObserver :public IObserver
+{
+    void Updata(XData data) override
+    {
+        XLOGI("testObserver data size = %d", data.size);
+    }
+};
+
+
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_xplay_MainActivity_stringFromJNI(
         JNIEnv* env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
 
+    TestObserver * ptest = new TestObserver();
+
     FFDemux* pDemux = new FFDemux();
+    pDemux->AddObserver(ptest);
+
     pDemux->open("/sdcard/Enders.Game.2013.BD1080.X264.AAC.English.CHS-ENG.52movieba.mp4");
     pDemux->Start();
 

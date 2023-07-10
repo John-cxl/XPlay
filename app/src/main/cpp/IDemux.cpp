@@ -10,6 +10,10 @@ void IDemux::Main()
     while(!isExit)
     {
         XData data = read();
+        if(0 < data.size)
+        {
+            Notify(data);
+        }
 //        XLOGI("size = %d", data.size);
 //        if(0 >= data.size){break;}
     }
