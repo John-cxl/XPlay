@@ -7,10 +7,14 @@
 
 
 #include "IDecode.h"
+struct AVCodecContext;
 
 class FFDecode : public IDecode{
 public:
     virtual bool Open(XParameter para) ;
+
+protected:
+    AVCodecContext * m_pCodecContext;
 };
 
 

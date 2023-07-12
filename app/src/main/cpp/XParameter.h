@@ -5,11 +5,11 @@
 #ifndef XPLAY_XPARAMETER_H
 #define XPLAY_XPARAMETER_H
 
-struct AVCodeParameters;
+struct AVCodecParameters;
 
 class XParameter {
 public:
-    AVCodeParameters *para =0;
+    AVCodecParameters *para =0;
 };
 
 

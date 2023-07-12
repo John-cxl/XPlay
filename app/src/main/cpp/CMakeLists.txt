@@ -49,8 +49,8 @@ add_library( # Sets the name of the library.
         XThread.cpp
         IObserver.cpp
         IDecode.cpp
-        FFDecode.cpp
         XParameter.cpp
+        FFDecode.cpp
         )
 
 # Searches for a specified prebuilt library and stores the path as a
