@@ -12,17 +12,17 @@ class FFDemux :public IDemux{
 public:
     //定义打开的接口
     virtual bool open(const char* rul);
+    virtual XParameter GetVPara();
     //定义关闭的接口
     virtual XData close();
     //定义读取接口
     virtual XData read();
 
-
     //构造函数
     FFDemux();
 
 private:
-    AVFormatContext *ic = 0;
+    AVFormatContext *m_pIc = 0;
 };
 
 
