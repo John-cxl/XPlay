@@ -4,6 +4,7 @@
 #include "FFDemux.h"
 #include "XLog.h"
 #include "FFDecode.h"
+#include <android/native_window_jni.h>
 
 class TestObserver :public IObserver
 {
@@ -52,4 +53,14 @@ Java_com_example_xplay_MainActivity_stringFromJNI(
 
     //delete(pDemux);
     return env->NewStringUTF(hello.c_str());
+}
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_example_xplay_XPlay_initView(JNIEnv *env, jobject thiz, jobject view) {
+    // TODO: implement initView()
+
+    ANativeWindow* pwin = ANativeWindow_fromSurface(env, view);
+
+
+
 }
