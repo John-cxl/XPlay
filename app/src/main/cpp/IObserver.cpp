@@ -3,11 +3,13 @@
 //
 
 #include "IObserver.h"
+#include "XLog.h"
 
 void IObserver::Notify(XData data) {
     m_mutex.lock();
     for(int i = 0; i < m_vector.size(); i++)
     {
+        //XLOGD(" notify ");
         m_vector[i]->Updata(data);
     }
     m_mutex.unlock();

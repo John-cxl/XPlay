@@ -54,13 +54,16 @@ bool FFDemux::open(const char* url)
     m_totalMs = m_pIc->duration / (AV_TIME_BASE / 1000);
 
     XLOGI("find info success total ms = %ld ", m_totalMs);
-
+    GetVPara();
+    GetAPara();
     return true;
 }
 
 
 XData FFDemux::read()
 {
+    if(!m_pIc)return XData();
+
     XData d;
     AVPacket* pPacket = av_packet_alloc(); //申请空间
 
@@ -68,9 +71,24 @@ XData FFDemux::read()
     if(ret != 0)
     {
         av_packet_free(&pPacket);
-
         return XData();
     }
+
+    if(pPacket->stream_index == m_videoStreamIndex)
+    {
+        d.isAudio = false;
+    }
+    else if(pPacket->stream_index == m_audioStreamIndex)
+    {
+        d.isAudio = true;
+    }
+    else
+    {
+        XLOGE(" it is not video and audio");
+        av_packet_free(&pPacket);
+        return XData();
+    }
+
     //XLOGI("size = %d, pts = %lld",pPacket->size, pPacket->pts );
     d.pData = (unsigned  char *)pPacket;
     d.size  = pPacket->size;
@@ -92,12 +110,32 @@ XParameter FFDemux::GetVPara() {
         XLOGE("av_find_best_stream error  result is [%d]", ret);
         return XParameter();
     }
-
     XLOGD("av_find_best_stream success");
-
-    return XParameter();
+    m_videoStreamIndex = ret;
+    XParameter para;
+    para.para = m_pIc->streams[ret]->codecpar;
+    return para;
 }
 
+XParameter FFDemux::GetAPara() {
+    if(!m_pIc)
+    {
+        XLOGE(" ic is le  null pointer");
+        return XParameter();
+    }
+
+    //这里是返回的是流的索引
+    int ret = av_find_best_stream(m_pIc, AVMEDIA_TYPE_AUDIO, -1,-1, 0,0);
+    if(ret < 0)
+    {
+        XLOGE("av_find_best_stream error  result is [%d]", ret);
+        return XParameter();
+    }
+    m_audioStreamIndex = ret;
+    XParameter para;
+    para.para = m_pIc->streams[ret]->codecpar;
+    return para;
+}
 
 
 //定义关闭的接口
@@ -106,6 +144,10 @@ XData FFDemux::close()
     XData a;
     return a;
 }
+
+
+
+
 
 
 

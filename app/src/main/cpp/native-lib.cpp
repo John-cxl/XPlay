@@ -21,17 +21,27 @@ Java_com_example_xplay_MainActivity_stringFromJNI(
         jobject /* this */) {
     std::string hello = "Hello from C++";
 
-    TestObserver * ptest = new TestObserver();
-    FFDecode* pDecode = new FFDecode();
 
-    FFDemux* pDemux = new FFDemux();
-    pDemux->AddObserver(ptest);
+    IDemux* pDemux = new FFDemux();
     pDemux->open("/sdcard/Enders.Game.2013.BD1080.X264.AAC.English.CHS-ENG.52movieba.mp4");
-    pDecode->Open(pDemux->GetVPara());
+
+    IDecode* pVDecode = new FFDecode();
+    pVDecode->Open(pDemux->GetVPara()); //获取
+
+    IDecode* pADecode = new FFDecode();
+    pADecode->Open( pDemux->GetAPara());
+
+    pDemux->AddObserver(pVDecode);  //添加观察者
+    pDemux->AddObserver(pADecode);  //添加观察者
 
     pDemux->Start();
-    XSleep(3000);
-    pDemux->Stop();
+    pVDecode->Start();
+    pADecode->Start();
+
+
+//    pDemux->Start();
+//    XSleep(3000);
+//    pDemux->Stop();
 
     //    for(;;)
 //    {

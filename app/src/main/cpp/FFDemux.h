@@ -13,6 +13,7 @@ public:
     //定义打开的接口
     virtual bool open(const char* rul);
     virtual XParameter GetVPara();
+    virtual XParameter GetAPara();
     //定义关闭的接口
     virtual XData close();
     //定义读取接口
@@ -23,6 +24,8 @@ public:
 
 private:
     AVFormatContext *m_pIc = 0;
+    int              m_videoStreamIndex = 0; //一般 视频默认是0
+    int              m_audioStreamIndex = 1; //一般 音频默认是1
 };
 
 

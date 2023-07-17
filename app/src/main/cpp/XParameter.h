@@ -9,7 +9,7 @@ struct AVCodecParameters;
 
 class XParameter {
 public:
-    AVCodecParameters *para =0;
+    AVCodecParameters *para = 0;
 };
 
 
