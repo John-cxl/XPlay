@@ -15,20 +15,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ActivityMainBinding binding;
-
+    private XPlay m_xplay;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-
-        Button[] btns = new Button[20];
-
+//        binding = ActivityMainBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_main);
 
         // Example of a call to a native method
-        TextView tv = binding.sampleText;
+        TextView tv = findViewById(R.id.sample_text);
+        m_xplay = findViewById(R.id.id_xplay);
         tv.setText(stringFromJNI());
     }
 

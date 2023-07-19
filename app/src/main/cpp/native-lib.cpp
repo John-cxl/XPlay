@@ -5,6 +5,7 @@
 #include "XLog.h"
 #include "FFDecode.h"
 #include <android/native_window_jni.h>
+#include "XEGL.h"
 
 class TestObserver :public IObserver
 {
@@ -61,6 +62,6 @@ Java_com_example_xplay_XPlay_initView(JNIEnv *env, jobject thiz, jobject view) {
 
     ANativeWindow* pwin = ANativeWindow_fromSurface(env, view);
 
-
+    XEGL::Get()->Init(pwin);
 
 }

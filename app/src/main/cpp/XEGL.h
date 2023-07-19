@@ -9,7 +9,7 @@
 class XEGL {
 public:
     virtual bool Init(void * win) = 0; //写成纯虚函数 也写成单件模式
-    XEGL * Get();
+    static XEGL * Get();
 
 protected:
     XEGL(){}
