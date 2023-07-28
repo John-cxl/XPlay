@@ -89,15 +89,16 @@ XData FFDecode::ReceiveFrame() {
     data.pData = (unsigned char*)m_pFrame;
     if(AVMEDIA_TYPE_VIDEO == m_pCodecContext->codec_type)
     {
-        data.isAudio = false;
         data.size = (m_pFrame->linesize[0] + m_pFrame->linesize[1] +m_pFrame->linesize[2]) * m_pFrame->height; //视频的 结构定义的
+        data.width = m_pFrame->width;
+        data.height = m_pFrame->height;
     }
     else
     {
         //样本字节数 * 单通道样本数 * 2通道
-        data.isAudio = true;
         data.size = av_get_bytes_per_sample((AVSampleFormat)m_pFrame->format) * m_pFrame->nb_samples * 2;
     }
+    memcpy(data.datas, m_pFrame->data, sizeof(data.datas));
 
     return data;
 }

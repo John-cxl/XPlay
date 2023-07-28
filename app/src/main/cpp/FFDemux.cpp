@@ -15,6 +15,7 @@ FFDemux::FFDemux() {
     static bool bFirst = true;
     if (bFirst)
     {
+        bFirst = false;
         //注册所有的 封装器
         av_register_all();
         //注册所有的 解封装器
@@ -74,6 +75,9 @@ XData FFDemux::read()
         return XData();
     }
 
+    d.pData = (unsigned char*)pPacket;
+    d.size = pPacket->size;
+
     if(pPacket->stream_index == m_videoStreamIndex)
     {
         d.isAudio = false;
@@ -89,9 +93,8 @@ XData FFDemux::read()
         return XData();
     }
 
-    //XLOGI("size = %d, pts = %lld",pPacket->size, pPacket->pts );
-    d.pData = (unsigned  char *)pPacket;
-    d.size  = pPacket->size;
+    //XLOGI("size = %d, pts = %lld isAudio = %d",pPacket->size, pPacket->pts, d.isAudio);
+
     return d;
 }
 

@@ -34,13 +34,14 @@ void IDecode::Main()
     while(!isExit)
     {
         m_mutex.lock();
-
+        //XLOGD("MAIN 111111");
         if(m_listAudioData.empty()) //如果是空的 那么接解锁 睡一下继续循环   这里是
         {
             m_mutex.unlock();
             XSleep(1);
             continue;
         }
+        //XLOGD("MAIN 222222");
         //取出数据
         XData data = m_listAudioData.front(); //取出就从 队列中移除
         m_listAudioData.pop_front();
@@ -52,8 +53,7 @@ void IDecode::Main()
            {
                XData frame =  ReceiveFrame();
                if(!frame.pData)break;
-
-               XLOGE("receive frame size = %d %d", frame.size, frame.isAudio);
+//               XLOGD("IDecode start");
                this->Notify(frame);
            }
         }

@@ -16,6 +16,7 @@ void XSleep(int mis)
 
 void XThread::Start()
 {
+    isExit = false;
     thread th(&XThread::ThreadMain, this);
     th.detach(); //放弃对新创建线程 控制
 }

@@ -6,17 +6,17 @@
 #define XPLAY_XLOG_H
 #include <android/log.h>
 
-
-
+#define TAG "chx"
 
 class XLog {
 
 };
 
 #ifdef ANDROID
-#define XLOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, "XPlay", __VA_ARGS__)
-#define XLOGI(...)  __android_log_print(ANDROID_LOG_INFO,  "XPlay", __VA_ARGS__)
-#define XLOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "XPlay", __VA_ARGS__)
+
+#define XLOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+#define XLOGI(...)  __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#define XLOGE(...)  __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
 #else
 
 #endif
