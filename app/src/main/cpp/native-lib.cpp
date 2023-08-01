@@ -9,6 +9,8 @@
 #include "XShader.h"
 #include "IVideoView.h"
 #include "GLVideoView.h"
+#include "IResample.h"
+#include "FFResample.h"
 
 class TestObserver :public IObserver
 {
@@ -44,6 +46,10 @@ Java_com_example_xplay_MainActivity_stringFromJNI(
 
     g_pView = new GLVideoView();
     pVDecode->AddObserver(g_pView);
+
+    IResample * pResample = new FFResample();
+    pResample->open(pDemux->GetAPara());
+    pADecode->AddObserver(pResample);
 
     pDemux->Start();
     pVDecode->Start();

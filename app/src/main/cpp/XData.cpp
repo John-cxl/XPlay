@@ -10,8 +10,30 @@ extern "C"{
 
 void XData::Drop()
 {
-    if(nullptr == pData){return;}
-    av_packet_free((AVPacket **)&pData);
+    if(!pData){return;}
+    if(AVPACKET_TYPE == type)
+    {
+        av_packet_free((AVPacket **)&pData);
+    }
+    else
+    {
+        delete pData;
+    }
+
     pData = nullptr;
     size = 0;
+}
+
+bool XData::Alloc(int size, const char *data) {
+    Drop();
+    type = UCHAR_TYPE;
+    if(size <= 0)return false;
+    this->pData = new unsigned char[size];
+    if(!this->pData)return false;
+    if(data)
+    {
+        memcpy(this->pData, data, size);
+    }
+
+    return true;
 }
