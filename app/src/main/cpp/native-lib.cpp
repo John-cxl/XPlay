@@ -11,6 +11,8 @@
 #include "GLVideoView.h"
 #include "IResample.h"
 #include "FFResample.h"
+#include "IAudioPlay.h"
+#include "SLAudioPlay.h"
 
 class TestObserver :public IObserver
 {
@@ -48,8 +50,14 @@ Java_com_example_xplay_MainActivity_stringFromJNI(
     pVDecode->AddObserver(g_pView);
 
     IResample * pResample = new FFResample();
-    pResample->open(pDemux->GetAPara());
+    XParameter outPara = pDemux->GetAPara();
+
+    pResample->open(pDemux->GetAPara(), outPara);
     pADecode->AddObserver(pResample);
+
+    IAudioPlay *audioPlay = new SLAudioPlay();
+    audioPlay->StartPlay(outPara);
+    pResample->AddObserver(audioPlay);
 
     pDemux->Start();
     pVDecode->Start();

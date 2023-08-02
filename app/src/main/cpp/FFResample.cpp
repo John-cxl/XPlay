@@ -18,8 +18,8 @@ bool FFResample::open(XParameter in, XParameter out) {
     m_actx = swr_alloc();
     XLOGE("open start");
     m_actx = swr_alloc_set_opts(m_actx,
-                                av_get_default_channel_layout(2),
-                                AV_SAMPLE_FMT_S16, in.para->sample_rate,
+                                av_get_default_channel_layout(out.channels),
+                                AV_SAMPLE_FMT_S16, out.sample_rate,
                                 av_get_default_channel_layout(in.para->channels),
                                 (AVSampleFormat)in.para->format, in.para->sample_rate,
                                 0,0);
@@ -39,7 +39,7 @@ bool FFResample::open(XParameter in, XParameter out) {
 }
 
 XData FFResample::Resample(XData indata) {
-    XLOGE("data size = %d", indata.size);
+    //XLOGE("data size = %d", indata.size);
     if (indata.size <= 0 || !indata.pData)
     {
         return XData();
@@ -63,7 +63,7 @@ XData FFResample::Resample(XData indata) {
         return XData();
     }
 
-    XLOGE("swr_convert success = %d", len);
+   // XLOGE("swr_convert success = %d", len);
 
     return out;
 }
