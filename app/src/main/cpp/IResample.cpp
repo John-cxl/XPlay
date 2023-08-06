@@ -3,10 +3,12 @@
 //
 
 #include "IResample.h"
+#include "XLog.h"
 
-void IResample::Updata(XData data) {
+void IResample::Update(XData data) {
     XData d = this->Resample(data);
-    if(d.size >0)
+    //XLOGD("iresample size = %d, d size = %d",data.size, d.size );
+    if(d.size > 0)
     {
         this->Notify(d);
     }

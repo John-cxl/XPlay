@@ -20,7 +20,7 @@ void GLVideoView::Render(XData data)
     {
         XLOGD("start create  XTexture");
         m_pTexture = XTexture::Create();
-        m_pTexture->Init(m_pView);
+        m_pTexture->Init(m_pView, (XTextureType)data.format);
     }
     //XLOGD("start render222222");
     m_pTexture->Draw(data.datas, data.width, data.height);

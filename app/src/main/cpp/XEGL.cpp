@@ -71,7 +71,7 @@ public:
         //3.1获取配置
         EGLConfig config = 0;
         EGLint    numConfigs = 0;
-        if(EGL_TRUE != eglChooseConfig(m_display, attribs, &config, 1, &numConfigs))
+        if(EGL_TRUE != eglChooseConfig(m_display, configSpec, &config, 1, &numConfigs))
         {
             XLOGE("eglChooseConfig failed");
             return false;
@@ -83,7 +83,7 @@ public:
 
         //4创建并打开EGL 上下文
         const EGLint  ctxAttr[] = {
-                EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE
+                EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE
         };
         m_context = eglCreateContext(m_display, config, EGL_NO_CONTEXT, ctxAttr);
         if(EGL_NO_CONTEXT == m_context)

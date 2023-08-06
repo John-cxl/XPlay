@@ -6,13 +6,21 @@
 #define XPLAY_IAUDIOPLAY_H
 
 
+#include <list>
 #include "IObserver.h"
 #include "XParameter.h"
 
 class IAudioPlay: public IObserver{
 public:
-    virtual void Updata(XData data);
+    //阻塞的 函数 缓冲数据满了以后会阻塞
+    virtual void Update(XData data);
+    //获取缓冲数据， 如没有则组赛
+    virtual XData GetData();
     virtual bool StartPlay(XParameter out) = 0;
+    int m_iMaxDataNum;
+protected:
+    std::list<XData> m_listData;
+    std::mutex       m_mutexAudio;
 
 };
 

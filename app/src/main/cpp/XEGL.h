@@ -6,6 +6,7 @@
 #define XPLAY_XEGL_H
 
 
+
 class XEGL {
 public:
     virtual bool Init(void * win) = 0; //写成纯虚函数 也写成单件模式

@@ -5,20 +5,32 @@
 extern "C"
 {
 #include <libavcodec/avcodec.h>
+#include <libavcodec/jni.h>
 }
 
 #include "FFDecode.h"
 #include "XLog.h"
 
-bool FFDecode::Open(XParameter para) {
+void FFDecode::InitHard(void *vm)
+{
+    //XLOGD("InitHard   +++++++++++++++");
+    av_jni_set_java_vm(vm, 0);
+}
+
+bool FFDecode::Open(XParameter para, bool isHard) {
 
     if(!para.para) return false;
     AVCodecParameters* p = para.para;
     //查找解码器 通过id
     AVCodec *cd = avcodec_find_decoder(p->codec_id);
+    if(isHard)
+    {
+        cd = avcodec_find_decoder_by_name("h264_mediacodec");
+    }
+
     if(!cd)
     {
-        XLOGE("avcodec_find_decoder failed");
+        XLOGE("avcodec_find_decoder  %d failed is hard %d",p->codec_id, isHard);
         return false;
     }
     //创建解码上下文
@@ -68,7 +80,7 @@ bool FFDecode::SendPacket(XData pkt) {
 
     return true;
 }
-
+//生产者 生产数据 给
 XData FFDecode::ReceiveFrame() {
 
     if(!m_pCodecContext)
@@ -98,7 +110,15 @@ XData FFDecode::ReceiveFrame() {
         //样本字节数 * 单通道样本数 * 2通道
         data.size = av_get_bytes_per_sample((AVSampleFormat)m_pFrame->format) * m_pFrame->nb_samples * 2;
     }
+    data.format = m_pFrame->format;
+//    if(!m_isAudio)
+//    {
+//        XLOGI("data format is %d", data.format);
+//    }
+
     memcpy(data.datas, m_pFrame->data, sizeof(data.datas));
 
     return data;
 }
+
+

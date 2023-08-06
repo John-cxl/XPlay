@@ -5,10 +5,10 @@
 #include <unistd.h>
 #include "IDecode.h"
 #include "XLog.h"
+//观察者 被动收到 服务者的信息 被注册为 其他服务的观察者就可以接受到
+void IDecode::Update(XData pkt) {
 
-void IDecode::Updata(XData pkt) {
-
-    if(pkt.isAudio != m_isAudio)
+    if(pkt.isAudio != m_isAudio) //这里 只处理 自己对应的数据 音频和视频分离
     {
         return;
     }

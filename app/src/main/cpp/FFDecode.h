@@ -12,7 +12,8 @@ struct AVFrame;
 
 class FFDecode : public IDecode{
 public:
-    virtual bool Open(XParameter para) ;
+    static void InitHard(void *vm);
+    virtual bool Open(XParameter para, bool isHard = false) ;
     virtual bool SendPacket(XData pkt);
     //再次调用 会复用上次 空间 线程不安全
     virtual XData ReceiveFrame();

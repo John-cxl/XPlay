@@ -5,7 +5,7 @@
 #include "IVideoView.h"
 #include "XLog.h"
 
-void IVideoView::Updata(XData data)
+void IVideoView::Update(XData data)
 {
 //    XLOGD("IVideoView update");
     this->Render(data);

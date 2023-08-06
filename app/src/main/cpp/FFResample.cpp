@@ -35,7 +35,7 @@ bool FFResample::open(XParameter in, XParameter out) {
     }
     m_outChannels = in.para->channels;
     m_outFormat   = AV_SAMPLE_FMT_S16;
-    return false;
+    return true;
 }
 
 XData FFResample::Resample(XData indata) {
@@ -62,7 +62,7 @@ XData FFResample::Resample(XData indata) {
         out.Drop();
         return XData();
     }
-
+    //out.isAudio = 1;
    // XLOGE("swr_convert success = %d", len);
 
     return out;

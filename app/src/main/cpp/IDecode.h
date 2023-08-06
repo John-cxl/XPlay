@@ -11,12 +11,13 @@
 //解码接口， 支持硬解码
 class IDecode :public IObserver{
 public:
+
     //打开解码器
-    virtual bool Open(XParameter para) = 0;
+    virtual bool Open(XParameter para, bool isHard = false) = 0;
     virtual bool SendPacket(XData pkt) = 0;   //发送数据
     //再次调用 会复用上次 空间 线程不安全
     virtual XData ReceiveFrame() = 0;
-    virtual void Updata(XData data);          //更新数据 观察者 会阻塞到这里
+    virtual void Update(XData data);          //更新数据 观察者 会阻塞到这里
     bool    m_isAudio = false;
     int     m_maxDataNumber = 100;   //不能无限制的存下去 不然的话 不从队列中取数据 内存会耗尽
 private:

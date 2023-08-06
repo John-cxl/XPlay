@@ -1,81 +1,29 @@
 #include <jni.h>
 #include <string>
 #include <android/log.h>
-#include "FFDemux.h"
-#include "XLog.h"
-#include "FFDecode.h"
 #include <android/native_window_jni.h>
-#include "XEGL.h"
-#include "XShader.h"
-#include "IVideoView.h"
-#include "GLVideoView.h"
-#include "IResample.h"
-#include "FFResample.h"
-#include "IAudioPlay.h"
-#include "SLAudioPlay.h"
 
-class TestObserver :public IObserver
+#include "FFPlayerBuilder.h"
+
+//IVideoView* g_pView = NULL;
+IPlayer* g_pPlay = nullptr;
+extern "C"
+JNIEXPORT
+jint JNI_OnLoad(JavaVM *vm, void *res)
 {
-    void Updata(XData data) override
-    {
-        //XLOGI("testObserver data size = %d", data.size);
-    }
-};
+    //FFDecode::InitHard(vm);
+    FFPlayerBuilder::InitHard(vm);
+    g_pPlay = FFPlayerBuilder::Get()->BuilderPlayer();
 
-IVideoView* g_pView = NULL;
-
-
-
+    g_pPlay->Open("/sdcard/v1080.mp4");//在这里添加想要播放的文件 路径
+    g_pPlay->Start();
+    return JNI_VERSION_1_4;
+}
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_xplay_MainActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
+Java_com_example_xplay_MainActivity_stringFromJNI(JNIEnv* env,jobject /* this */)
+{
     std::string hello = "Hello from C++";
-
-    IDemux* pDemux = new FFDemux();
-
-    pDemux->open("/sdcard/Enders.Game.2013.BD1080.X264.AAC.English.CHS-ENG.52movieba.mp4");
-
-    IDecode* pVDecode = new FFDecode();
-    pVDecode->Open(pDemux->GetVPara()); //获取
-
-    IDecode* pADecode = new FFDecode();
-    pADecode->Open( pDemux->GetAPara());
-
-    pDemux->AddObserver(pVDecode);  //添加观察者
-    pDemux->AddObserver(pADecode);  //添加观察者
-
-    g_pView = new GLVideoView();
-    pVDecode->AddObserver(g_pView);
-
-    IResample * pResample = new FFResample();
-    XParameter outPara = pDemux->GetAPara();
-
-    pResample->open(pDemux->GetAPara(), outPara);
-    pADecode->AddObserver(pResample);
-
-    IAudioPlay *audioPlay = new SLAudioPlay();
-    audioPlay->StartPlay(outPara);
-    pResample->AddObserver(audioPlay);
-
-    pDemux->Start();
-    pVDecode->Start();
-    pADecode->Start();
-
-
-//    pDemux->Start();
-//    XSleep(3000);
-//    pDemux->Stop();
-
-    //    for(;;)
-//    {
-//        XData data = pDemux->read();
-//        XLOGI("size = %d ", data.size);
-//       data.Drop();
-//    }
-
-    //delete(pDemux);
     return env->NewStringUTF(hello.c_str());
 }
 
@@ -84,15 +32,6 @@ JNIEXPORT void JNICALL
 Java_com_example_xplay_XPlay_initView(JNIEnv *env, jobject thiz, jobject view) {
     // TODO: implement initView()
     ANativeWindow* pwin = ANativeWindow_fromSurface(env, view);
-    if(NULL == pwin)
-    {
-        XLOGE("pWin is null");
-        return ;
-    }
-    g_pView->SetRender(pwin);
-    XLOGD("g_pView is null %d", g_pView == NULL);
-//    XEGL::Get()->Init(pwin);
-//    XShader shader;
-//    shader.Init();
-    XLOGE("***********************************");
+    if(g_pPlay) //判断不可靠， 如果是多线程 的话不可靠
+        g_pPlay->InitView(pwin);
 }
