@@ -63,6 +63,7 @@ add_library( # Sets the name of the library.
         IPlayer.cpp
         IPlayerBuilder.cpp
         FFPlayerBuilder.cpp
+        IPlayerPorxy.cpp
         )
 
 # Searches for a specified prebuilt library and stores the path as a
