@@ -8,7 +8,11 @@ extern "C"  //这个引用的是 C语言写的
 {
     #include <libavformat/avformat.h>
 };
-
+//分数转为浮点数
+static double r2d(AVRational r)
+{
+    return r. num == 0 || r.den == 0 ? 0. : (double)r.num / (double)r.den;
+}
 
 
 FFDemux::FFDemux() {
@@ -30,9 +34,14 @@ FFDemux::FFDemux() {
 bool FFDemux::open(const char* url)
 {
     XLOGI("open file %s begin\n", url);
+    Close();
+
+    mux.lock();
+
     int ret = avformat_open_input(&m_pIc, url, 0, 0); //这个是打开
     if(ret != 0)
     {
+        mux.unlock();
         char buf[1024]= {0};
         av_strerror(ret, buf, sizeof(buf));
         XLOGE("open rul %s failed error %s ", url, buf);
@@ -44,6 +53,7 @@ bool FFDemux::open(const char* url)
     ret = avformat_find_stream_info(m_pIc,0);
     if(ret != 0)
     {
+        mux.unlock();
         char buf[1024]= {0};
         av_strerror(ret, buf, sizeof(buf));
         XLOGE("find info failed  error %s ", buf);
@@ -55,15 +65,23 @@ bool FFDemux::open(const char* url)
     m_totalMs = m_pIc->duration / (AV_TIME_BASE / 1000);
 
     XLOGI("find info success total ms = %ld ", m_totalMs);
+    mux.unlock(); //提前解锁下面 也有锁会死锁
     GetVPara();
     GetAPara();
+
     return true;
 }
 
 
 XData FFDemux::read()
 {
-    if(!m_pIc)return XData();
+    mux.lock();
+
+    if(!m_pIc)
+    {
+        mux.unlock();
+        return XData();
+    }
 
     XData d;
     AVPacket* pPacket = av_packet_alloc(); //申请空间
@@ -72,6 +90,7 @@ XData FFDemux::read()
     if(ret != 0)
     {
         av_packet_free(&pPacket);
+        mux.unlock();
         return XData();
     }
 
@@ -90,19 +109,27 @@ XData FFDemux::read()
     {
         XLOGE(" it is not video and audio");
         av_packet_free(&pPacket);
+        mux.unlock();
         return XData();
     }
 
     //XLOGI("size = %d, pts = %lld isAudio = %d",pPacket->size, pPacket->pts, d.isAudio);
-
+    //转换 pts
+    pPacket->pts = pPacket->pts *1000* r2d(m_pIc->streams[pPacket->stream_index]->time_base);
+    pPacket->dts = pPacket->dts *1000* r2d(m_pIc->streams[pPacket->stream_index]->time_base);
+    d.pts = (int)pPacket->pts;
+    //XLOGI("d.tps = %d", d.pts);
+    mux.unlock();
     return d;
 }
 
 
 XParameter FFDemux::GetVPara() {
 
+    mux.lock();
     if(!m_pIc)
     {
+        mux.unlock();
         XLOGE(" ic is le  null pointer");
         return XParameter();
     }
@@ -110,6 +137,7 @@ XParameter FFDemux::GetVPara() {
     int ret = av_find_best_stream(m_pIc, AVMEDIA_TYPE_VIDEO, -1,-1, 0,0);
     if(ret < 0)
     {
+        mux.unlock();
         XLOGE("av_find_best_stream error  result is [%d]", ret);
         return XParameter();
     }
@@ -117,13 +145,16 @@ XParameter FFDemux::GetVPara() {
     m_videoStreamIndex = ret;
     XParameter para;
     para.para = m_pIc->streams[ret]->codecpar;
+    mux.unlock();
     return para;
 }
 
 XParameter FFDemux::GetAPara() {
+    mux.lock();
     if(!m_pIc)
     {
         XLOGE(" ic is le  null pointer");
+        mux.unlock();
         return XParameter();
     }
 
@@ -132,6 +163,7 @@ XParameter FFDemux::GetAPara() {
     if(ret < 0)
     {
         XLOGE("av_find_best_stream error  result is [%d]", ret);
+        mux.unlock();
         return XParameter();
     }
     m_audioStreamIndex = ret;
@@ -139,15 +171,15 @@ XParameter FFDemux::GetAPara() {
     para.para = m_pIc->streams[ret]->codecpar;
     para.channels = m_pIc->streams[ret]->codecpar->channels;
     para.sample_rate = m_pIc->streams[ret]->codecpar->sample_rate;
+    mux.unlock();
     return para;
 }
 
-
-//定义关闭的接口
-XData FFDemux::close()
-{
-    XData a;
-    return a;
+void FFDemux::Close() {
+    mux.lock();
+    if(m_pIc)
+        avformat_close_input(&m_pIc);
+    mux.unlock();
 }
 
 

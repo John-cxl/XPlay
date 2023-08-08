@@ -16,9 +16,12 @@ IPlayer *IPlayer::Get(unsigned char index) {
 }
 
 bool IPlayer::Open(const char *filePath) {
+
+    mux.lock();
     if(!demux || !demux->open(filePath))
     {
         XLOGE("demux is null %d demux->open %s file failed",demux == nullptr, filePath);
+        mux.unlock();
         return false;
     }
     //解码 可能不需要， 解封装之后就是 原始数据
@@ -42,15 +45,17 @@ bool IPlayer::Open(const char *filePath) {
     }
 
     XLOGE("open success!!!!");
-
+    mux.unlock();
     return true;
 }
 
 bool IPlayer::Start() {
 
+    mux.lock();
     if(!demux || !demux->Start())
     {
         XLOGE("demux->Start failed ");
+        mux.unlock();
         return false;
     }
 
@@ -58,17 +63,34 @@ bool IPlayer::Start() {
         adecode->Start();
     if(audioPlay)
         audioPlay->StartPlay(outPara);
-
     if(vdecode)
         vdecode->Start();
+    XThread::Start();
 
+    mux.unlock();
     return true;
 }
 
 bool IPlayer::InitView(void *pWin) {
     if(videoView)
         videoView->SetRender(pWin);
-
     return false;
+}
+//在 XThread  Start 中才会启动
+void IPlayer::Main() {
+    while(!isExit)
+    {
+        mux.lock();
+        if(!audioPlay || !vdecode)
+        {
+            mux.unlock();
+            XSleep(2);
+            continue;
+        }
+        //同步
+        vdecode->synPts = audioPlay->m_pts;
+        mux.unlock();
+        XSleep(2);
+    }
 }
 

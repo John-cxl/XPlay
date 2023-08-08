@@ -35,10 +35,21 @@ void IDecode::Main()
     {
         m_mutex.lock();
         //XLOGD("MAIN 111111");
+        //判断音视频同步  在视频 code 中进行判断
+        if(!m_isAudio && synPts > 0)
+        {
+            if(synPts < m_curPts)
+            {
+                m_mutex.unlock();
+                XSleep(2);
+                continue;
+            }
+        }
+
         if(m_listAudioData.empty()) //如果是空的 那么接解锁 睡一下继续循环   这里是
         {
             m_mutex.unlock();
-            XSleep(1);
+            XSleep(2);
             continue;
         }
         //XLOGD("MAIN 222222");
@@ -53,7 +64,7 @@ void IDecode::Main()
            {
                XData frame =  ReceiveFrame();
                if(!frame.pData)break;
-//               XLOGD("IDecode start");
+               m_curPts = frame.pts;
                this->Notify(frame);
            }
         }

@@ -16,12 +16,14 @@ XData IAudioPlay::GetData() {
             d = m_listData.front();
             m_listData.pop_front();
             m_mutexAudio.unlock();
+            m_pts = d.pts;
             return d;
         }
         m_mutexAudio.unlock();
         XSleep(1);
     }
-
+    //m_pts = 0;
+    //异常的获取
     return d;
 }
 

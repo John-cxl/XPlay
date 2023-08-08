@@ -20,6 +20,10 @@ public:
     virtual void Update(XData data);          //更新数据 观察者 会阻塞到这里
     bool    m_isAudio = false;
     int     m_maxDataNumber = 100;   //不能无限制的存下去 不然的话 不从队列中取数据 内存会耗尽
+
+    //同步时间，再次打开文件要清理
+    int synPts = 0;
+    int m_curPts = 0;
 private:
     virtual void Main();
     std::list<XData> m_listAudioData;

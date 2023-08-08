@@ -18,9 +18,11 @@ public:
     virtual XData GetData();
     virtual bool StartPlay(XParameter out) = 0;
     int m_iMaxDataNum;
+    int  m_pts = 0;
 protected:
     std::list<XData> m_listData;
     std::mutex       m_mutexAudio;
+
 
 };
 

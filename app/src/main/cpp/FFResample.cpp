@@ -63,7 +63,7 @@ XData FFResample::Resample(XData indata) {
         return XData();
     }
     //out.isAudio = 1;
-   // XLOGE("swr_convert success = %d", len);
-
+    // XLOGE("swr_convert success = %d", len);
+    out.pts = indata.pts;
     return out;
 }

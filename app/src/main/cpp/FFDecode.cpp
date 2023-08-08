@@ -117,7 +117,7 @@ XData FFDecode::ReceiveFrame() {
 //    }
 
     memcpy(data.datas, m_pFrame->data, sizeof(data.datas));
-
+    data.pts = m_pFrame->pts;
     return data;
 }
 

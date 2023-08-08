@@ -10,6 +10,7 @@ JNIEXPORT
 jint JNI_OnLoad(JavaVM *vm, void *res)
 {
     IPlayerPorxy::Get()->Init(vm);
+    //IPlayerPorxy::Get()->Open("/sdcard/Enders.Game.2013.BD1080.X264.AAC.English.CHS-ENG.52movieba.mp4");
     IPlayerPorxy::Get()->Open("/sdcard/v1080.mp4");//在这里添加想要播放的文件 路径
     IPlayerPorxy::Get()->Start();
     return JNI_VERSION_1_4;
