@@ -17,8 +17,24 @@ void FFDecode::InitHard(void *vm)
     av_jni_set_java_vm(vm, 0);
 }
 
+
+void FFDecode::Close() {
+    m_mux.lock();
+    m_curPts = 0;
+    if(m_pFrame)
+        av_frame_free(&m_pFrame);
+    if(m_pCodecContext)
+    {
+        avcodec_close(m_pCodecContext);
+        avcodec_free_context(&m_pCodecContext);
+    }
+    m_mux.unlock();
+}
+
+
 bool FFDecode::Open(XParameter para, bool isHard) {
 
+    Close();
     if(!para.para) return false;
     AVCodecParameters* p = para.para;
     //查找解码器 通过id
@@ -33,6 +49,7 @@ bool FFDecode::Open(XParameter para, bool isHard) {
         XLOGE("avcodec_find_decoder  %d failed is hard %d",p->codec_id, isHard);
         return false;
     }
+    m_mux.lock();
     //创建解码上下文
     m_pCodecContext = avcodec_alloc_context3(cd);
     avcodec_parameters_to_context(m_pCodecContext, p);
@@ -42,6 +59,7 @@ bool FFDecode::Open(XParameter para, bool isHard) {
     int ret = avcodec_open2(m_pCodecContext, 0, 0);
     if(0 != ret)
     {
+        m_mux.unlock();
         char buf[1024] = {0};
         av_strerror(ret, buf, sizeof(buf) - 1);
         XLOGE("error = %s", buf);
@@ -58,20 +76,22 @@ bool FFDecode::Open(XParameter para, bool isHard) {
     }
 
     XLOGI("open avcodec open success");
-
+    m_mux.unlock();
     return true;
 }
 
 bool FFDecode::SendPacket(XData pkt) {
     if(!pkt.pData || 0 >= pkt.size){return false;}
-
+    m_mux.lock();
     //上一步的 解码器上下文没有获取到
     if(!m_pCodecContext)
     {
+        m_mux.unlock();
         return false;
     }
 
     int ret = avcodec_send_packet(m_pCodecContext, (AVPacket*)pkt.pData); //这里是立即返回的
+    m_mux.unlock();
     if(0 != ret)
     {
         XLOGE("avcodec_send_frame failed\n");
@@ -83,6 +103,7 @@ bool FFDecode::SendPacket(XData pkt) {
 //生产者 生产数据 给
 XData FFDecode::ReceiveFrame() {
 
+    m_mux.lock();
     if(!m_pCodecContext)
     {
         return XData();
@@ -94,6 +115,7 @@ XData FFDecode::ReceiveFrame() {
     int ret = avcodec_receive_frame(m_pCodecContext,m_pFrame);
     if(0 != ret)
     {
+        m_mux.unlock();
         //XLOGE("avcodec_receive_frame failed\n");
         return XData();
     }
@@ -118,7 +140,10 @@ XData FFDecode::ReceiveFrame() {
 
     memcpy(data.datas, m_pFrame->data, sizeof(data.datas));
     data.pts = m_pFrame->pts;
+    m_mux.unlock();
     return data;
 }
+
+
 
 

@@ -21,7 +21,6 @@ public:
     virtual XData read()  = 0;
 protected:
     long m_totalMs = 0; // 总时长
-    std::mutex   mux;
     virtual void Main();
 };
 

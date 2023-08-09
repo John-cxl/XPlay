@@ -25,6 +25,7 @@ private:
     AVFormatContext *m_pIc = 0;
     int              m_videoStreamIndex = 0; //一般 视频默认是0
     int              m_audioStreamIndex = 1; //一般 音频默认是1
+    std::mutex   mux;
 };
 
 

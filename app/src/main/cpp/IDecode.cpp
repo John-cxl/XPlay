@@ -12,7 +12,7 @@ void IDecode::Update(XData pkt) {
     {
         return;
     }
-
+    //XLOGE(" isAudio = %d is audio = %d", pkt.isAudio, m_isAudio);
     while(!isExit)
     {
         m_mutex.lock();
