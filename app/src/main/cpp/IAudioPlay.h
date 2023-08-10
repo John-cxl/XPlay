@@ -17,6 +17,7 @@ public:
     //获取缓冲数据， 如没有则组赛
     virtual XData GetData();
     virtual bool StartPlay(XParameter out) = 0;
+    virtual void Closer() = 0;
     int m_iMaxDataNum;
     int  m_pts = 0;
 protected:
