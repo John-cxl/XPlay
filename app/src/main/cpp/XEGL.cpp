@@ -6,6 +6,7 @@
 #include <EGL/eglext.h>
 #include "XLog.h"
 #include "XEGL.h"
+#include <mutex>
 //基类是纯虚函数 利用他继承 并初始化 Init 初始化窗口操作 并用 XEGL get 中设置CXEGL 来实现单例模式
 class CXEGL:public XEGL
 {
@@ -13,29 +14,54 @@ public:
     EGLDisplay  m_display = EGL_NO_DISPLAY;
     EGLSurface  m_surface = EGL_NO_SURFACE;
     EGLContext  m_context = EGL_NO_CONTEXT;
-
+    std::mutex  m_mutex;
     virtual void Draw()
     {
-
+        m_mutex.lock();
         if(EGL_NO_DISPLAY == m_display || EGL_NO_SURFACE == m_surface)
         {
+            m_mutex.unlock();
             XLOGE("EGL_NO_DISPLAY == m_display || EGL_NO_SURFACE == m_surface");
             return;
         }
 
         EGLBoolean  b = eglSwapBuffers(m_display , m_surface);
+        m_mutex.unlock();
         //XLOGD( " eglSwapBuffers is %d", b);
+    }
+
+    virtual void Close()
+    {
+        m_mutex.lock();
+        if(m_display == EGL_NO_DISPLAY)
+        {
+            m_mutex.unlock();
+            return;
+        }
+        eglMakeCurrent(m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        if(m_surface != EGL_NO_SURFACE)
+            eglDestroySurface(m_display, m_surface);
+        if(m_context != EGL_NO_CONTEXT)
+            eglDestroyContext(m_display, m_context);
+        m_display = EGL_NO_DISPLAY;
+        m_surface = EGL_NO_SURFACE;
+        m_context = EGL_NO_CONTEXT;
+        m_mutex.unlock();
+        return;
     }
 
     virtual bool Init(void *win) override
     {
-        ANativeWindow *pWin = (ANativeWindow*)win;
 
+        ANativeWindow *pWin = (ANativeWindow*)win;
+        Close();
         //初始化EGL
         //获取EGLDisplay对象 显示设备
+        m_mutex.lock();
         m_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
         if(EGL_NO_DISPLAY == m_display)
         {
+            m_mutex.unlock();
             XLOGE("eglGetDisplay failed");
             return false;
         }
@@ -44,6 +70,7 @@ public:
         //2初始化Display
         if(EGL_TRUE != eglInitialize(m_display,0,0))
         {
+            m_mutex.unlock();
             XLOGE("eglInitialize failed");
             return false;
         }
@@ -73,6 +100,7 @@ public:
         EGLint    numConfigs = 0;
         if(EGL_TRUE != eglChooseConfig(m_display, configSpec, &config, 1, &numConfigs))
         {
+            m_mutex.unlock();
             XLOGE("eglChooseConfig failed");
             return false;
         }
@@ -88,6 +116,7 @@ public:
         m_context = eglCreateContext(m_display, config, EGL_NO_CONTEXT, ctxAttr);
         if(EGL_NO_CONTEXT == m_context)
         {
+            m_mutex.unlock();
             XLOGE("eglCreateContext failed");
             return false;
         }
@@ -96,10 +125,11 @@ public:
 
        if(EGL_TRUE !=  eglMakeCurrent(m_display, m_surface,m_surface,m_context))
        {
+           m_mutex.unlock();
            XLOGE("eglMakeCurrent failed");
            return false;
        }
-
+        m_mutex.unlock();
         XLOGD("eglMakeCurrent success");
         return true;
     }

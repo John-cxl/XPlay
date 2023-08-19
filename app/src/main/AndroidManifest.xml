@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XPlay"
         tools:targetApi="31">
+        <activity android:name=".open_source"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

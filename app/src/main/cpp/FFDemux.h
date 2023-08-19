@@ -12,6 +12,8 @@ class FFDemux :public IDemux{
 public:
     //定义打开的接口
     virtual bool open(const char* rul);
+    //seek 位置 pos 0.0 - 1.0
+    virtual bool Seek(double pos);
     virtual void Close();
     virtual XParameter GetVPara();
     virtual XParameter GetAPara();

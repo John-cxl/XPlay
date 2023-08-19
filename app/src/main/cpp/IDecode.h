@@ -16,6 +16,7 @@ public:
     virtual bool Open(XParameter para, bool isHard = false) = 0;
     virtual bool SendPacket(XData pkt) = 0;   //发送数据
     virtual void Close() = 0;
+    virtual void Clear();
     //再次调用 会复用上次 空间 线程不安全
     virtual XData ReceiveFrame() = 0;
     virtual void Update(XData data);          //更新数据 观察者 会阻塞到这里

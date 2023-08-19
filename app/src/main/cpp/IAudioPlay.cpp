@@ -27,6 +27,16 @@ XData IAudioPlay::GetData() {
     return d;
 }
 
+void IAudioPlay::Clear()
+{
+    m_mutexAudio.lock();
+    while(!m_listData.empty())
+    {
+        m_listData.front().Drop();
+        m_listData.pop_front();
+    }
+    m_mutexAudio.unlock();
+}
 
 void IAudioPlay::Update(XData data) {
 
@@ -48,5 +58,6 @@ void IAudioPlay::Update(XData data) {
         break;
     }
 }
+
 
 

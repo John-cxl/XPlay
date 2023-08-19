@@ -14,8 +14,9 @@ class GLVideoView :public IVideoView{
 public:
     virtual void SetRender(void * pWin);
     virtual void Render(XData data);
-
+    virtual void Close();
 protected:
+    std::mutex m_mutex;
     void * m_pView = 0;
     XTexture * m_pTexture;
 };

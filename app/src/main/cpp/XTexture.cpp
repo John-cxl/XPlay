@@ -12,17 +12,32 @@ class CXTextrue :public XTexture
 public:
     XShader sh;
     XTextureType type;
+    std::mutex m_mutex;
+
+    virtual void Drop()
+    {
+        m_mutex.lock();
+        XEGL::Get()->Close();
+        sh.Close();
+        m_mutex.unlock();
+        delete this;
+    }
     virtual bool Init(void * pWin, XTextureType type)
     {
+        m_mutex.lock();
+        XEGL::Get()->Close();
+        sh.Close();
         this->type = type;
         if(!pWin)
         {
+            m_mutex.unlock();
             XLOGE("CXTextrue INit failed\n");
             return false;
         }
 
         if(!XEGL::Get()->Init(pWin))
         {
+            m_mutex.unlock();
             XLOGE("XEGL INit failed\n");
             return false;
         }
@@ -33,11 +48,14 @@ public:
 //            return false;
 //        }
         sh.Init((XShaderType)type);
+        m_mutex.unlock();
         XLOGE("shader INit success )))))))))))))))))))))\n");
+
         return true;
     }
     virtual void Draw(unsigned  char *data[], int width, int height)
     {
+        m_mutex.lock();
         sh.GetTexture(0, width, height,data[0]); //y
         if(type == XTEXTURE_YUV420P)
         {
@@ -52,6 +70,7 @@ public:
         sh.Draw();
         //XLOGE("start Draw");
         XEGL::Get()->Draw();
+        m_mutex.unlock();
     }
 };
 

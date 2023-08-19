@@ -18,9 +18,14 @@ public:
 
     void Init(void* vm);
     virtual bool Open(const char* filePath);
+    virtual void Close();
+
+
     virtual bool Start();
     virtual bool InitView(void* pWin);
-
+    //获取当前的播放进度  0.0 --- 1.0
+    virtual double PlayPos();
+    virtual bool Seek(double pos);
 protected:
     IPlayerPorxy(){}
     IPlayer * player = 0;

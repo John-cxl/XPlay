@@ -42,7 +42,8 @@ void SLAudioPlay::PlayCall(void *bufq)
     memcpy(m_buf, d.pData, d.size);
 
     m_mux.lock();
-    (*pbf)->Enqueue(pbf,m_buf, d.size);
+    if(g_pcmQue && (*g_pcmQue))
+        (*g_pcmQue)->Enqueue(g_pcmQue,m_buf, d.size);
     m_mux.unlock();
 
     d.Drop();
@@ -62,6 +63,7 @@ static void PcmCall(SLAndroidSimpleBufferQueueItf bf, void *contex)
 
 void SLAudioPlay::Closer()
 {
+    IAudioPlay::Clear();
     m_mux.lock();
     //停止播放
     if(g_iplayer && (*g_iplayer))
@@ -90,8 +92,15 @@ void SLAudioPlay::Closer()
     if(g_engineSL && (*g_engineSL))
     {
         (*g_engineSL)->Destroy(g_engineSL);
-        g_eng = nullptr;
     }
+
+    g_engineSL = NULL;
+    g_eng = NULL;
+    g_mix = NULL;
+    g_player = NULL;
+    g_iplayer = NULL;
+    g_pcmQue = NULL;
+
     m_mux.unlock();
 }
 

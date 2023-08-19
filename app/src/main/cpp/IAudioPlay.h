@@ -18,6 +18,7 @@ public:
     virtual XData GetData();
     virtual bool StartPlay(XParameter out) = 0;
     virtual void Closer() = 0;
+    virtual void Clear();
     int m_iMaxDataNum;
     int  m_pts = 0;
 protected:

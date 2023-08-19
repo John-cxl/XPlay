@@ -27,6 +27,18 @@ void IDecode::Update(XData pkt) {
     }
 
 }
+void IDecode::Clear()
+{
+    m_mutex.lock();
+    while(!m_listAudioData.empty())
+    {
+        m_listAudioData.front().Drop();
+        m_listAudioData.pop_front();
+    }
+    m_curPts = 0;
+    synPts = 0;
+    m_mutex.unlock();
+}
 
 //这里是消费者 在消费
 void IDecode::Main()
@@ -72,3 +84,5 @@ void IDecode::Main()
         m_mutex.unlock();
     }
 }
+
+

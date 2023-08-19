@@ -112,15 +112,38 @@ static GLuint InitShader(const char *code,GLint type)
     XLOGE("glCompileShader success!");
     return sh;
 }
+void XShader::Close()
+{
+    m_mutex.lock();
+    //释放shader
+    if(m_program)
+        glDeleteProgram(m_program);
+    if(m_fsh)
+        glDeleteShader(m_fsh);
+    if(m_vsh)
+        glDeleteShader(m_vsh);
+    //释放材质
+    for(int i = 0; i < sizeof(texts)/sizeof(unsigned int); i++)
+    {
+        if(texts[i])
+        {
+            glDeleteTextures(1,&texts[i]);
+        }
+        texts[i]=0;
+    }
+    m_mutex.unlock();
 
+}
 bool XShader::Init(XShaderType type) {
 
 
 //顶点和片元shader初始化
     //顶点shader初始化
+    m_mutex.lock();
     m_vsh = InitShader(vertexShader,GL_VERTEX_SHADER);
     if(m_vsh == 0)
     {
+        m_mutex.unlock();
         XLOGE("InitShader GL_VERTEX_SHADER failed!");
         return false;
     }
@@ -139,6 +162,7 @@ bool XShader::Init(XShaderType type) {
             m_fsh = InitShader(fragNV21,GL_FRAGMENT_SHADER);
             break;
         default:
+            m_mutex.unlock();
             XLOGE("type is error");
             return false;
     }
@@ -147,6 +171,7 @@ bool XShader::Init(XShaderType type) {
 
     if(m_fsh == 0)
     {
+        m_mutex.unlock();
         XLOGE("InitShader GL_FRAGMENT_SHADER failed!");
         return false;
     }
@@ -158,6 +183,7 @@ bool XShader::Init(XShaderType type) {
     m_program = glCreateProgram();
     if(m_program == 0)
     {
+        m_mutex.unlock();
         XLOGE("glCreateProgram failed!");
         return false;
     }
@@ -171,6 +197,7 @@ bool XShader::Init(XShaderType type) {
     glGetProgramiv(m_program,GL_LINK_STATUS,&status);
     if(status != GL_TRUE)
     {
+        m_mutex.unlock();
         XLOGE("glLinkProgram failed!");
         return false;
     }
@@ -216,12 +243,10 @@ bool XShader::Init(XShaderType type) {
         case XSHADER_NV21:
             glUniform1i( glGetUniformLocation(m_program,"uvTexture"),1); //对于纹理第2层
             break;
-        default:
-            return false;
     }
 
 
-
+    m_mutex.unlock();
     XLOGI("初始化Shader成功！");
 
     return true;
@@ -229,19 +254,28 @@ bool XShader::Init(XShaderType type) {
 
 void XShader::Draw()
 {
-    if(!m_program){return ;}
+    m_mutex.lock();
+    if(!m_program)
+    {
+        m_mutex.unlock();
+        return ;
+    }
     //三维绘制
     //XLOGD("XShader draw");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    m_mutex.unlock();
 }
 
 void XShader::GetTexture(unsigned int index, int width, int height, unsigned char *buf, bool isa)
 {
     unsigned  int format = GL_LUMINANCE;
+    m_mutex.lock();
     if(isa)
     {
+        m_mutex.unlock();
         format = GL_LUMINANCE_ALPHA;
     }
+
     if(texts[index] == 0)
     {
         //材质初始化
@@ -269,4 +303,5 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
     glBindTexture(GL_TEXTURE_2D,texts[index]);
     //替换纹理内容
     glTexSubImage2D(GL_TEXTURE_2D,0,0,0,width,height,format,GL_UNSIGNED_BYTE,buf);
+    m_mutex.unlock();
 }

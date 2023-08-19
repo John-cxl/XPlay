@@ -29,7 +29,30 @@ FFDemux::FFDemux() {
     }
 }
 
+bool FFDemux::Seek(double pos)
+{
+    if(pos < 0 || pos >1)
+    {
+        XLOGD("ffdemux seek failed pos must 0.0 - 1.0");
+        return false;
+    }
+    bool b = false;
+    mux.lock();
+    if(!m_pIc)
+    {
+        mux.unlock();
+        return false;
+    }
+    //清理读取的缓冲
+    avformat_flush(m_pIc);
+    long long seekPts = 0;
+    seekPts = m_pIc->streams[m_videoStreamIndex]->duration * pos;
+    //往后跳转到关键帧
+    b = av_seek_frame(m_pIc, m_videoStreamIndex, seekPts,AVSEEK_FLAG_FRAME | AVSEEK_FLAG_BACKWARD);
+    mux.unlock();
+    return b;
 
+}
 //定义打开的接口
 bool FFDemux::open(const char* url)
 {

@@ -20,8 +20,13 @@ class IPlayer : public XThread{
 public:
     static IPlayer* Get(unsigned char index = 0);
     virtual bool Open(const char* filePath);
+    virtual void Close();
+
     virtual bool Start();
     virtual bool InitView(void* pWin);
+    //获取当前的播放进度  0.0 --- 1.0
+    virtual double PlayPos();
+    virtual bool Seek(double pos);
 
     //是否硬解码
     bool isHardDecode = true;

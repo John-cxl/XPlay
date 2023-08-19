@@ -19,6 +19,7 @@ void FFDecode::InitHard(void *vm)
 
 
 void FFDecode::Close() {
+    IDecode::Clear();
     m_mux.lock();
     m_curPts = 0;
     if(m_pFrame)

@@ -17,15 +17,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-<!--    <TextView-->
-<!--        android:id="@+id/sample_text"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="lslslsl"-->
-<!--        android:textSize="30sp"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent"-->
-<!--        app:layout_constraintRight_toRightOf="parent"/>-->
+    <Button
+        android:id="@+id/btn_open"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        android:text="Open"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <SeekBar
+        android:id="@+id/sk_process"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        app:layout_constraintLeft_toRightOf="@id/btn_open"
+        app:layout_constraintTop_toTopOf="@id/btn_open"
+        app:layout_constraintBottom_toBottomOf="@id/btn_open"
+        app:layout_constraintRight_toRightOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>
