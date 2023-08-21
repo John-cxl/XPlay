@@ -212,6 +212,7 @@ bool SLAudioPlay::StartPlay(XParameter out)
     //启动列队 回调
     (*g_pcmQue)->Enqueue(g_pcmQue, "", 1);
     XLOGE("SLAudioPlay StartPlay  success");
+    isExit = false;
     m_mux.unlock();
     return true;
 }

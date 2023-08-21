@@ -57,3 +57,10 @@ Java_com_example_xplay_MainActivity_Seek(JNIEnv *env, jobject thiz, jdouble pos)
     // TODO: implement Seek()
     IPlayerPorxy::Get()->Seek(pos);
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_xplay_MainActivity_PlayOrPause(JNIEnv *env, jobject thiz) {
+    // TODO: implement PlayOrPause()
+    IPlayerPorxy::Get()->SetPause(!IPlayerPorxy::Get()->IsPause());
+}

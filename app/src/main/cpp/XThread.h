@@ -15,11 +15,21 @@ class XThread
 public:
     virtual bool Start(); //启动线程
     virtual void Stop();  //安全停止线程 不一定成功 通过控制变量 isExit  不要直接停止，你不知道他进行到那一步了
+
+    virtual void SetPause(bool isP);
+    virtual bool IsPause()
+    {
+        isPausing = isPause;
+        return isPause;
+    }
     virtual void Main() {}  //入口主函数
 
 protected:
     bool isExit = false;
     bool isRunning = true;
+    bool isPause = false;
+    bool isPausing =  false;
+
 private:
     void ThreadMain();
 };

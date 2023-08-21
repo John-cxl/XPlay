@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_main);
         m_xplay =  findViewById(R.id.id_xplay);
+        m_xplay.setOnClickListener(this);
         m_btnOpen = findViewById(R.id.btn_open);
         m_skProcess = findViewById(R.id.sk_process);
         inicSurfaceHolder();
@@ -91,6 +92,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
             break;
+            case R.id.id_xplay:
+            {
+                Log.d("chx","id_xplay");
+                PlayOrPause();
+            }
+            break;
         }
     }
 
@@ -126,4 +133,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public  native double PlayPos();
     public native void Seek(double pos);
+    public native void PlayOrPause();
 }

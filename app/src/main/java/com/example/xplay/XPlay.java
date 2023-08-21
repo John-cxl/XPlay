@@ -14,12 +14,13 @@ import android.view.View;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class XPlay extends SurfaceView /*implements SurfaceHolder.Callback, GLSurfaceView.Renderer*/{
+public class XPlay extends SurfaceView   /*implements SurfaceHolder.Callback, GLSurfaceView.Renderer*/{
 
     public XPlay(Context context, AttributeSet attrs) {
         super(context, attrs);
         Log.d("chx", "XPlay00000000000000");
         //setRenderer(this);
+        //setOnClickListener(this);
     }
 
     public XPlay(Context context)
@@ -27,6 +28,8 @@ public class XPlay extends SurfaceView /*implements SurfaceHolder.Callback, GLSu
         super(context);
     }
     public native void initView(Object view);
+
+
 //    @Override
 //    public void surfaceCreated(SurfaceHolder holder)
 //    {

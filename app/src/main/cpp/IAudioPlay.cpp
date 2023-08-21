@@ -8,8 +8,15 @@
 XData IAudioPlay::GetData() {
 
     XData d;
+    isRunning = true;
     while(!isExit)
     {
+        if(isPause)
+        {
+            XSleep(2);
+            continue;
+        }
+
         m_mutexAudio.lock();
         if(!m_listData.empty())
         {
@@ -24,6 +31,7 @@ XData IAudioPlay::GetData() {
     }
     //m_pts = 0;
     //异常的获取
+    isRunning = false;
     return d;
 }
 

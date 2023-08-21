@@ -45,6 +45,12 @@ void IDecode::Main()
 {
     while(!isExit)
     {
+        if(isPause)
+        {
+            XSleep(2);
+            continue;
+        }
+
         m_mutex.lock();
         //XLOGD("MAIN 111111");
         //判断音视频同步  在视频 code 中进行判断

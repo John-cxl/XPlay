@@ -20,7 +20,8 @@ public:
     virtual bool Open(const char* filePath);
     virtual void Close();
 
-
+    virtual void SetPause(bool isP);
+    virtual bool IsPause();
     virtual bool Start();
     virtual bool InitView(void* pWin);
     //获取当前的播放进度  0.0 --- 1.0

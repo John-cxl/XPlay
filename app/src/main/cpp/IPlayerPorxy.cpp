@@ -4,6 +4,8 @@
 
 #include "IPlayerPorxy.h"
 #include "FFPlayerBuilder.h"
+#include "XLog.h"
+
 void IPlayerPorxy::Init(void* vm) {
     mux.lock();
     if(vm)
@@ -69,6 +71,28 @@ bool IPlayerPorxy::InitView(void *pWin) {
     if(player)
         b =  player->InitView(pWin);
     mux.unlock();
+    return b;
+}
+
+void IPlayerPorxy::SetPause(bool isP) {
+    mux.lock();
+    if(player)
+    {
+        player->SetPause(isP);
+        XLOGD("isP = %d", isP);
+    }
+    mux.unlock();
+}
+
+bool IPlayerPorxy::IsPause() {
+    bool b = false;
+    mux.lock();
+    if(player)
+    {
+        b = player->IsPause();
+    }
+    mux.unlock();
+    XLOGD("b = %d", b);
     return b;
 }
 

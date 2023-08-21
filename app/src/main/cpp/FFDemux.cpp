@@ -131,8 +131,8 @@ XData FFDemux::read()
     else
     {
         XLOGE(" it is not video and audio");
-        av_packet_free(&pPacket);
         mux.unlock();
+        av_packet_free(&pPacket);
         return XData();
     }
 
