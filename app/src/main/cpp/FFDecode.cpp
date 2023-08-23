@@ -16,7 +16,14 @@ void FFDecode::InitHard(void *vm)
     //XLOGD("InitHard   +++++++++++++++");
     av_jni_set_java_vm(vm, 0);
 }
-
+void FFDecode::Clear()
+{
+    IDecode::Clear();
+    m_mux.lock();
+    if(m_pCodecContext)
+        avcodec_flush_buffers(m_pCodecContext);//清理FFmpage
+    m_mux.unlock();
+}
 
 void FFDecode::Close() {
     IDecode::Clear();

@@ -15,6 +15,7 @@ public:
     static void InitHard(void *vm);
     virtual bool Open(XParameter para, bool isHard = false) ;
     virtual void Close();
+    virtual void Clear();
     virtual bool SendPacket(XData pkt);
     //再次调用 会复用上次 空间 线程不安全
     virtual XData ReceiveFrame();
